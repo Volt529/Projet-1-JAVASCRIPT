@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom'
 import { useData } from '../hooks/useData'
 import { HeaderComponent } from '../components/HeaderComponent'
 import { MedalsEvolutionChart } from '../components/MedalsEvolutionChart'
+import { LoadingSkeleton } from '../components/LoadingSkeleton'
+import { ErrorMessage } from '../components/ErrorMessage'
 import {
   calculateTotalAthletes,
   calculateTotalMedals,
@@ -18,42 +20,25 @@ export const CountryDetailPage: FC = () => {
   const { data, loading, error } = useData()
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-900 text-white p-8 flex items-center justify-center">
-        <p className="text-lg">Chargement des données...</p>
-      </div>
-    )
+    return <LoadingSkeleton indicatorsCount={3} />
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen bg-gray-900 text-white p-8 flex items-center justify-center">
-        <p className="text-lg text-red-400">{error}</p>
-      </div>
-    )
+    return <ErrorMessage message={error} />
   }
 
   const olympic = data?.find((o) => o.id === Number(id))
 
   if (!olympic) {
-    return (
-      <div className="min-h-screen bg-gray-900 text-white p-8 flex flex-col items-center justify-center gap-4">
-        <p className="text-lg text-red-400">
-          Aucun pays ne correspond à cet identifiant.
-        </p>
-        <Link to="/" className="underline text-blue-400">
-          ← Retour au dashboard
-        </Link>
-      </div>
-    )
+    return <ErrorMessage message="Aucun pays ne correspond à cet identifiant." />
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
+    <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-6 lg:p-8">
       <div className="max-w-6xl mx-auto">
         <Link
           to="/"
-          className="inline-block mb-4 text-sm text-blue-400 underline"
+          className="inline-block mb-4 text-sm text-blue-400 underline focus:outline-none focus:ring-2 focus:ring-blue-400 rounded"
         >
           ← Retour au dashboard
         </Link>
@@ -81,7 +66,7 @@ export const CountryDetailPage: FC = () => {
 
         <MedalsEvolutionChart olympic={olympic} />
 
-        <div className="text-sm text-gray-400">
+        <div className="text-sm text-gray-400 mt-4">
           <p>Données des 5 dernières éditions des Jeux Olympiques</p>
         </div>
       </div>

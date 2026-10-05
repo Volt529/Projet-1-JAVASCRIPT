@@ -49,8 +49,8 @@ export const MedalsEvolutionChart: FC<MedalsEvolutionChartProps> = ({
   }
 
   return (
-    <div className="bg-gray-800 p-8 rounded-lg shadow-xl">
-      <div style={{ height: '400px' }}>
+    <div className="bg-gray-800 p-4 sm:p-6 lg:p-8 rounded-lg shadow-xl">
+      <div className="h-64 sm:h-80 lg:h-[400px]">
         <Line data={evolutionData} options={evolutionOptions} />
       </div>
     </div>

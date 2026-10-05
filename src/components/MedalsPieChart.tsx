@@ -1,10 +1,13 @@
 import type { FC } from 'react'
 import { Pie } from 'react-chartjs-2'
+import type { ActiveElement, ChartEvent } from 'chart.js'
 import type { Olympic } from '../models/Olympic'
 import { calculateTotalMedals } from '../utils/medals'
 
 interface MedalsPieChartProps {
   data: Olympic[]
+  /** Appelé avec l'id du pays cliqué sur un segment du camembert. */
+  onCountryClick: (countryId: number) => void
 }
 
 const BACKGROUND_COLORS = [
@@ -24,10 +27,14 @@ const BORDER_COLORS = [
 ]
 
 /**
- * Composant "dumb" : ne fait qu'afficher un camembert à partir des données reçues en props.
- * Ne connaît pas l'origine des données (contrairement à l'ancien Home, cf. étape 1).
+ * Composant "dumb" : affiche un camembert et notifie le parent au clic sur un segment,
+ * via onCountryClick. Ne connaît pas la route /country/:id ni useNavigate :
+ * c'est DashboardPage (smart) qui décide quoi faire du clic.
  */
-export const MedalsPieChart: FC<MedalsPieChartProps> = ({ data }) => {
+export const MedalsPieChart: FC<MedalsPieChartProps> = ({
+  data,
+  onCountryClick,
+}) => {
   const chartData = {
     labels: data.map((olympic) => olympic.country),
     datasets: [
@@ -44,6 +51,13 @@ export const MedalsPieChart: FC<MedalsPieChartProps> = ({ data }) => {
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    onClick: (_event: ChartEvent, elements: ActiveElement[]) => {
+      if (elements.length > 0) {
+        const index = elements[0].index
+        const country = data[index]
+        onCountryClick(country.id)
+      }
+    },
     plugins: {
       legend: {
         position: 'bottom' as const,
@@ -55,8 +69,12 @@ export const MedalsPieChart: FC<MedalsPieChartProps> = ({ data }) => {
   }
 
   return (
-    <div className="bg-gray-800 p-8 rounded-lg shadow-xl">
-      <div style={{ height: '400px' }}>
+    <div className="bg-gray-800 p-4 sm:p-6 lg:p-8 rounded-lg shadow-xl">
+      <div
+        className="h-64 sm:h-80 lg:h-[400px]"
+        role="img"
+        aria-label="Répartition du total des médailles par pays, toutes éditions confondues"
+      >
         <Pie data={chartData} options={chartOptions} />
       </div>
     </div>

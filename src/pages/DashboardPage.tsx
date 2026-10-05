@@ -1,8 +1,10 @@
 import type { FC } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useData } from '../hooks/useData'
 import { HeaderComponent } from '../components/HeaderComponent'
 import { MedalsPieChart } from '../components/MedalsPieChart'
+import { LoadingSkeleton } from '../components/LoadingSkeleton'
+import { ErrorMessage } from '../components/ErrorMessage'
 
 const TOTAL_GAMES_EDITIONS = 5
 
@@ -12,33 +14,28 @@ const TOTAL_GAMES_EDITIONS = 5
  */
 export const DashboardPage: FC = () => {
   const { data, loading, error } = useData()
+  const navigate = useNavigate()
+
+  const handleCountryClick = (countryId: number): void => {
+    navigate(`/country/${countryId}`)
+  }
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-900 text-white p-8 flex items-center justify-center">
-        <p className="text-lg">Chargement des données...</p>
-      </div>
-    )
+    return <LoadingSkeleton indicatorsCount={2} />
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen bg-gray-900 text-white p-8 flex items-center justify-center">
-        <p className="text-lg text-red-400">{error}</p>
-      </div>
-    )
+    return <ErrorMessage message={error} showBackLink={false} />
   }
 
   if (!data || data.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white p-8 flex items-center justify-center">
-        <p className="text-lg">Aucune donnée disponible.</p>
-      </div>
+      <ErrorMessage message="Aucune donnée disponible." showBackLink={false} />
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
+    <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-6 lg:p-8">
       <div className="max-w-6xl mx-auto">
         <HeaderComponent
           title="Historique des Jeux Olympiques - TéléSport"
@@ -57,19 +54,23 @@ export const DashboardPage: FC = () => {
           ]}
         />
 
-        <MedalsPieChart data={data} />
+        <MedalsPieChart data={data} onCountryClick={handleCountryClick} />
 
-        <div className="mt-4 flex flex-wrap gap-3">
+        <nav
+          aria-label="Liste des pays"
+          className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"
+        >
           {data.map((olympic) => (
             <Link
               key={olympic.id}
               to={`/country/${olympic.id}`}
-              className="px-4 py-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors text-sm"
+              className="px-4 py-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-400"
+              aria-label={`Voir les détails de ${olympic.country}`}
             >
               {olympic.country}
             </Link>
           ))}
-        </div>
+        </nav>
 
         <div className="text-sm text-gray-400 mt-4">
           <p>Cliquez sur un pays pour voir ses détails</p>
