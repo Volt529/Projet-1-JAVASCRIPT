@@ -1,5 +1,6 @@
 import type { FC } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useData } from '../hooks/useData'
 import { HeaderComponent } from '../components/HeaderComponent'
 import { MedalsEvolutionChart } from '../components/MedalsEvolutionChart'
@@ -12,12 +13,22 @@ import {
 } from '../utils/medals'
 
 /**
- * Page "smart" : appelle useData, résout le pays à partir de l'id de l'URL,
- * et gère explicitement le cas d'un id invalide (critère du cahier des charges).
+ * Page "smart" : appelle useData, résout le pays à partir de l'id de l'URL.
+ * Si l'id ne correspond à aucun pays, redirige vers /404 via useNavigate
+ * (cahier des charges, étape 3) plutôt que d'afficher un écran vide.
  */
 export const CountryDetailPage: FC = () => {
   const { id } = useParams()
   const { data, loading, error } = useData()
+  const navigate = useNavigate()
+
+  const olympic = data?.find((o) => o.id === Number(id))
+
+  useEffect(() => {
+    if (!loading && !error && data && !olympic) {
+      navigate('/404', { replace: true })
+    }
+  }, [loading, error, data, olympic, navigate])
 
   if (loading) {
     return <LoadingSkeleton indicatorsCount={3} />
@@ -27,10 +38,10 @@ export const CountryDetailPage: FC = () => {
     return <ErrorMessage message={error} />
   }
 
-  const olympic = data?.find((o) => o.id === Number(id))
-
   if (!olympic) {
-    return <ErrorMessage message="Aucun pays ne correspond à cet identifiant." />
+    // L'id est invalide : le useEffect ci-dessus redirige vers /404.
+    // On ne rend rien le temps que la redirection s'exécute.
+    return null
   }
 
   return (

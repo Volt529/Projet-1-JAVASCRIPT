@@ -1,106 +1,96 @@
-# TéléSport - Olympic Games History Dashboard
+# TéléSport — Olympic Games History Dashboard
 
-Interactive web application to visualize historical performance data of countries in the Olympic Games.
+Application web permettant de visualiser l'historique des performances des pays aux Jeux Olympiques : nombre de médailles par pays, et détail de l'évolution des performances d'un pays sélectionné.
 
-## 🚀 Features
+Projet réalisé dans le cadre de la formation OpenClassrooms, à partir d'un starter code fourni, refactoré selon une architecture modulaire (voir [`ARCHITECTURE.md`](./ARCHITECTURE.md)) puis complété avec l'interface finale.
 
-- **Interactive Dashboard**: View medal counts by country with interactive charts
-- **Country Details**: Explore detailed statistics for each participating country
-- **Data Visualization**: Interactive charts powered by Chart.js
-- **Responsive Design**: Optimized for desktop and mobile devices
-- **Modern Stack**: Built with React 19, TypeScript, and Tailwind CSS
+## 🚀 Fonctionnalités
 
-## 📋 Prerequisites
+- **Dashboard** : camembert du total des médailles par pays, avec indicateurs clés (pays participants, éditions des JO).
+- **Page détail d'un pays** : indicateurs (participations, total médailles, total athlètes) et graphique d'évolution du nombre de médailles édition par édition.
+- **Navigation SPA** : clic sur un segment du camembert (ou sur le nom d'un pays) → page détail, sans rechargement de page.
+- **Gestion des erreurs** : page 404 pour toute URL inconnue, redirection automatique vers cette page si l'identifiant d'un pays dans l'URL ne correspond à rien.
+- **Responsive** : mobile, tablette et desktop, avec un design adapté à chaque taille d'écran (voir captures ci-dessous).
 
-- **Node.js** 22 LTS or higher
-- **npm** (included with Node.js)
+## 📋 Prérequis
+
+- **Node.js** 20 ou supérieur (testé avec Node 24 LTS)
+- **npm** (inclus avec Node.js)
 
 ## 🛠️ Installation
 
-Clone the repository:
-
 ```bash
-git clone https://github.com/openclassrooms/p2-dfsjs.git
-cd p2-dfsjs
-```
-
-Install dependencies:
-
-```bash
+git clone https://github.com/Volt529/Projet-1-JAVASCRIPT.git
+cd Projet-1-JAVASCRIPT
 npm install
 ```
 
-## 🎯 Usage
+## 🎯 Utilisation
 
-### Development Server
-
-Start the development server:
+### Serveur de développement
 
 ```bash
 npm run dev
 ```
 
-The application will be available at [http://localhost:5173](http://localhost:5173)
+L'application est disponible sur [http://localhost:5173](http://localhost:5173).
 
-### Production Build
-
-Build the application for production:
+### Build de production
 
 ```bash
 npm run build
 ```
 
-### Linting
-
-Run the linter to check code quality:
+### Linter
 
 ```bash
 npm run lint
 ```
 
-## 📁 Project Structure
+## 📁 Structure du projet
 
 ```
-p2-dfsjs/
-├── public/              # Static public assets
-├── src/
-│   ├── App.tsx         # Main application component
-│   ├── main.tsx        # React entry point
-│   └── index.css       # Global styles
-├── index.html          # Main HTML page
-├── package.json        # Project dependencies
-├── tsconfig.json       # TypeScript configuration
-├── vite.config.ts      # Vite configuration
-├── tailwind.config.js  # Tailwind CSS configuration
-└── .eslintrc.cjs       # ESLint configuration
+src/
+├── models/           # Interfaces TypeScript (Participation, Olympic)
+├── hooks/            # useData : seul point de contact avec la source de données
+├── utils/            # Fonctions de calcul pures (totaux médailles/athlètes)
+├── components/       # Composants réutilisables ("dumb") : HeaderComponent,
+│                      # MedalsPieChart, MedalsEvolutionChart, LoadingSkeleton, ErrorMessage
+├── pages/            # Pages ("smart") : DashboardPage, CountryDetailPage, NotFoundPage
+├── App.tsx            # Configuration Chart.js + routing (React Router)
+└── main.tsx           # Point d'entrée React
 ```
 
-## 🔧 Tech Stack
+Le détail du raisonnement derrière cette organisation (séparation smart/dumb, choix des patterns, préparation à une future API) est documenté dans [`ARCHITECTURE.md`](./ARCHITECTURE.md). L'analyse du starter code d'origine et la proposition d'architecture sont dans [`notes-architecture.md`](./notes-architecture.md).
 
-- **React 19** - UI library with latest features
-- **TypeScript** - Static type checking
-- **Vite 5** - Fast build tool and dev server
-- **Tailwind CSS 4** - Utility-first CSS framework
-- **React Router 6** - Client-side routing
-- **Chart.js** - Interactive data visualization
-- **ESLint** - Code quality and consistency
+## 🔧 Choix techniques
 
-## 📊 Data
+- **React 19 + TypeScript**, en mode strict, sans `any`.
+- **Vite** comme outil de build et serveur de développement.
+- **Tailwind CSS 4** pour le style et la responsivité (breakpoints `sm`/`lg`), sans fichier CSS additionnel.
+- **React Router 6** pour la navigation SPA (`/`, `/country/:id`, `/404`, route générique `*`).
+- **Chart.js** (via `react-chartjs-2`) pour les graphiques, avec gestion du clic sur un segment pour la navigation.
+- **Hook `useData` unique** : centralise la donnée (actuellement un tableau mocké) et un état `{ data, loading, error }`. C'est le seul fichier qui devra changer le jour où une vraie API REST sera branchée.
+- **Composants réutilisables** (`HeaderComponent`, `LoadingSkeleton`, `ErrorMessage`) pour éviter toute duplication entre les deux pages.
 
-The application currently uses mock data to simulate Olympic Games statistics. This architecture is designed to facilitate future integration with a REST API backend.
+## 📱 Captures d'écran
 
-## 🎨 Design
+### Desktop
 
-The application features:
+![Dashboard - Desktop](./screenshots/dashboard-desktop.png)
+![Page détail - Desktop](./screenshots/country-desktop.png)
 
-- Clean, modern interface optimized for data visualization
-- Responsive layout adapting to all screen sizes
-- Interactive charts with hover effects
-- Smooth navigation between pages
+### Mobile
 
-## 📚 Documentation
+![Dashboard - Mobile](./screenshots/dashboard-mobile.png)
+![Page détail - Mobile](./screenshots/country-mobile.png)
 
-For more information on the technologies used:
+## ⚠️ Limites connues
+
+- Les données sont actuellement mockées dans `useData.ts` (pas d'appel API réel), conformément au périmètre de cet exercice.
+- Pas de tests automatisés (hors périmètre de cet exercice, voir `notes-architecture.md`).
+
+## 📚 Documentation des technologies utilisées
 
 - [React Documentation](https://react.dev)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
@@ -108,15 +98,3 @@ For more information on the technologies used:
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
 - [React Router Documentation](https://reactrouter.com)
 - [Chart.js Documentation](https://www.chartjs.org/docs/latest/)
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📝 License
-
-This project is available for educational and personal use.
-
----
-
-**Built with React 19 + TypeScript + Vite + Tailwind CSS**

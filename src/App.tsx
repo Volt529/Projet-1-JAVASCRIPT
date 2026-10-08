@@ -13,6 +13,7 @@ import {
 } from 'chart.js'
 import { DashboardPage } from './pages/DashboardPage'
 import { CountryDetailPage } from './pages/CountryDetailPage'
+import { NotFoundPage } from './pages/NotFoundPage'
 
 ChartJS.register(
   ArcElement,
@@ -35,6 +36,8 @@ export const App: FC = () => {
       <Routes>
         <Route path="/" element={<DashboardPage />} />
         <Route path="/country/:id" element={<CountryDetailPage />} />
+        <Route path="/404" element={<NotFoundPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   )
